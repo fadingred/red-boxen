@@ -74,18 +74,31 @@ node default {
   include ruby::1_9_2
   include ruby::1_9_3
   include ruby::2_0_0
-
+  
+  # common apps
+  include chrome
+  include firefox::release
+  include textmate::textmate2::release
+  include sublime_text_2
+  include dropbox
+  include mysql
+  
   # common, useful packages
   package {
     [
       'ack',
+      'coreutils',
       'findutils',
-      'gnu-tar'
+      'gnu-tar',
+      'python',
     ]:
   }
-
-  file { "${boxen::config::srcdir}/our-boxen":
-    ensure => link,
-    target => $boxen::config::repodir
+  
+  exec { 'pip install docutils':
+    require => Package[python],
+  }
+  
+  package { 'mercurial':
+    require => [Package[python], Exec['pip install docutils']],
   }
 }
